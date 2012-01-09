@@ -107,7 +107,7 @@ class FMDB {
      * 
      * @param   array   $arrFields
      * 
-     * @example $objFMDB->setFields('fieldName' => 'ValueToUpdate');
+     * @example $objFMDB->setFields(array('fieldName' => 'ValueToUpdate'));
      * 
      * @return  bool
      */
