@@ -22,7 +22,7 @@ class FMDB {
 
 
     /** Constructor of the class */
-    public function __construct(  ) {
+    public function __construct( ) {
         
         $this->fm = new FileMaker( FMDB_NAME, FMDB_IP, FMDB_USER, FMDB_PASS );
     }
@@ -177,8 +177,10 @@ class FMDB {
         } else {
             return $this->isError( $findReq );
         }
-
+        
+        //Keeping tidy
         unset( $result, $commit, $record, $findReq );
+        
         return $blOut;
     }
 
