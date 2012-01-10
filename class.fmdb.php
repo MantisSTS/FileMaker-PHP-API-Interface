@@ -9,7 +9,7 @@ require_once ( 'config/config.php' );
  * @version 1.4
  */
 class FMDB {
-    /**
+    /** 
      * Setting up the classwide variables
      */
     protected $fm;
