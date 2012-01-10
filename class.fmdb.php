@@ -1,16 +1,12 @@
 <?php
 
-//Require the FileMaker API
 require_once ( 'fm_api/FileMaker.php' );
-
-//Require the Config file
 require_once ( 'config/config.php' );
-
 /**
  * Interface between the FileMaker API and PHP - Written by RichardC 
  * 
  * @author  RichardC
- * @version 1.2
+ * @version 1.4
  */
 class FMDB {
     /**
@@ -22,9 +18,8 @@ class FMDB {
 
 
     /** Constructor of the class */
-    public function __construct( ) {
-        
-        $this->fm = new FileMaker( FMDB_NAME, FMDB_IP, FMDB_USER, FMDB_PASS );
+    public function __construct() {
+        $this->fm = new FileMaker( constant( 'FMDB_NAME' ), constant( 'FMDB_IP' ), constant( 'FMDB_USERNAME' ), constant( 'FMDB_PASSWORD' ) );
     }
 
 
@@ -34,7 +29,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.2
+     * @version 1.4
      * 
      * @param   obj     $request_object
      * 
@@ -50,7 +45,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.2
+     * @version 1.4
      * 
      * @param   string  $layout
      * @param   array   $arrSearchCriteria
@@ -67,7 +62,7 @@ class FMDB {
         $findReq = $this->fm->newFindCommand( $layout );
 
         foreach ( $arrSearchCriteria as $field => $value ) {
-            $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
+            $findReq->addFindCriterion( $this->fm_escape_string( $field ), '=='.$this->fm_escape_string( $value ) );
         }
 
         $results = $findReq->execute();
@@ -86,8 +81,8 @@ class FMDB {
             foreach ( $records as $record ) {
                 $i++;
                 foreach ( $fields as $field ) {
-                    $arrOut[$i]['rec_id'] = $record->getRecordId();
-                    $arrOut[$i][$field] = $record->getField( $field );
+                    $arrOut[$i]['rec_id']   = $record->getRecordId();
+                    $arrOut[$i][$field]     = $record->getField( $field );
                 }
             }
         } else {
@@ -177,10 +172,8 @@ class FMDB {
         } else {
             return $this->isError( $findReq );
         }
-        
-        //Keeping tidy
+
         unset( $result, $commit, $record, $findReq );
-        
         return $blOut;
     }
 
@@ -355,7 +348,7 @@ class FMDB {
      * 
      * @return  string
      */
-    function fm_escape_string( $input ) {
+    public function fm_escape_string( $input ) {
         if ( is_array( $input ) ) {
             return array_map( __method__, $input );
         }
