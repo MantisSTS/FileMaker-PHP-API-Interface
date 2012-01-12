@@ -9,11 +9,12 @@ require_once ( 'config/config.php' );
  * @version 1.4
  */
 class FMDB {
-    /** 
+    /**
      * Setting up the classwide variables
      */
     protected $fm;
     protected $layout = '';
+    protected $debugCheck = true;
     public $lastObj = null;
 
 
@@ -24,7 +25,7 @@ class FMDB {
 
 
     /**
-     * Checks whether there is an error in the resource given
+     * Checks whether there is an error in the resource given.
      * 
      * @author  RichardC
      * @since   1.0
@@ -39,6 +40,41 @@ class FMDB {
         return ( FileMaker::isError( $request_object ) ? $request_object->getCode() : 0 );
     }
 
+
+    /** 
+     * Just a quick debug function that I threw together for testing
+     * 
+     * @author  RichardC
+     * @since   1.4
+     * 
+     * @version 1.0
+     * 
+     * @param   string  $func
+     * @param   array   $arrReturn
+     * 
+     * @return  bool
+     */
+    protected function debug( $func, $arrReturn ){
+        $debugStr = '';
+        
+        if( $func == '' || empty( $func ) ){
+            return '';
+        }
+        
+        foreach( $arrReturn as $k => $v ){
+            
+            if( is_array( $v ) ){
+                foreach( $v as $n => $m ){
+                    $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] ' . $m . ' ");</script>' ." \n\r " . '<script type="text/javascript">console.log("      ");</script>';
+                }
+            }else{
+                $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
+            }
+        }
+
+        return $debugStr;
+    }
+
     /**
      * Selects data from a FileMaker Layout from the given criteria
      * 
@@ -49,6 +85,7 @@ class FMDB {
      * 
      * @param   string  $layout
      * @param   array   $arrSearchCriteria
+     * @param   bool    $xml
      * 
      * @return  array
      */
@@ -62,7 +99,7 @@ class FMDB {
         $findReq = $this->fm->newFindCommand( $layout );
 
         foreach ( $arrSearchCriteria as $field => $value ) {
-            $findReq->addFindCriterion( $this->fm_escape_string( $field ), '=='.$this->fm_escape_string( $value ) );
+            $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
         }
 
         $results = $findReq->execute();
@@ -89,6 +126,13 @@ class FMDB {
             $arrOut['errorCode'] = $this->isError( $results );
         }
 
+        if( $this->debugCheck ){
+            foreach( $arrOut as $k => $v ){
+                echo $this->debug( 'SELECT', array(
+                    $k  =>  $v 
+                ));
+            }
+        }
         return $arrOut;
     }
 
@@ -150,7 +194,7 @@ class FMDB {
      */
     public function updateRecordByID( $layout, $arrFields, $iRecordID ) {
         $blOut = false;
-        if ( ( $layout == '' ) || ( !is_array( $arrFields ) ) || ( !is_number( $iRecordID ) ) ) {
+        if ( ( $layout == '' ) || ( !is_array( $arrFields ) ) || ( !is_numeric( $iRecordID ) ) ) {
             return false;
         }
         $findReq = $this->fm->getRecordById( $layout, $iRecordID );
