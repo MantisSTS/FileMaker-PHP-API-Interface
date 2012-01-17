@@ -16,7 +16,10 @@ class FMDB {
     protected $layout = '';
     protected $debugCheck = true;
     public $lastObj = null;
-
+	
+    //Filemaker LessThan/Equal to and GreaterThan/Equal to characters - Does not work in all IDEs
+    public $ltet = '≤';
+    public $gtet = '≥';
 
     /** Constructor of the class */
     public function __construct() {
@@ -42,7 +45,7 @@ class FMDB {
 
 
     /** 
-     * Just a quick debug function that I threw together for testing
+     * Just a quick debug function that I threw together for testing 
      * 
      * @author  RichardC
      * @since   1.4
@@ -330,14 +333,14 @@ class FMDB {
      * @return  bool
      */
     public function runScript( $layout, $scriptName, $params = array() ) {
-        $blOut = false;
         if ( ( empty( $layout ) ) || ( empty( $scriptName ) ) ) {
-            return $blOut;
+            return false;
         }
+        
         if ( $this->fm->newPerformScriptCommand( $layout, $scriptName, $params ) ) {
-            $blOut = true;
+            return true;
         }
-        return $blOut;
+        return false;
     }
 
     /**
@@ -363,7 +366,8 @@ class FMDB {
      * 
      * @return  bool
      */
-    public function delete( $layout, $iRecordID ) {
+    public function deleteRecordByID( $layout, $iRecordID ) {
+        
     }
 
     /**
