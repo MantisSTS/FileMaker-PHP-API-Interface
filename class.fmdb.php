@@ -230,12 +230,10 @@ class FMDB {
             
             //Commit the setFields
             $commit = $record->commit();
+            if ( $this->isError( $commit ) !== 0 ) {
+                return $this->isError( $commit );
+            }
         }
-        
-        if ( $this->isError( $commit ) !== 0 ) {
-            return $this->isError( $commit );
-        }
- 
         
         //Housekeeping
         unset( $result, $commit, $record, $findReq );
