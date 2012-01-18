@@ -182,13 +182,11 @@ class FMDB {
     }
     
     
-    /**
+   /**
      * Updates a set of fields on a layout where the clauses match
      * 
      * @author  RichardC
-     * @since   1.0
-     * 
-     * @todo    Fix the timeout issues that occur.
+     * @since   1.4
      * 
      * @version 1.0
      * 
@@ -212,7 +210,7 @@ class FMDB {
         foreach ( $arrSearchCriteria as $field => $value ) {
             $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
         }
-        
+
         //Perform the find
         $result = $findReq->execute();
         
@@ -220,8 +218,10 @@ class FMDB {
             return $this->isError( $findReq );    
         }
         
+        $records = $result->getRecords();
+        
         //Loop through the found records 
-        foreach ( $result->getRecords() as $record ) {
+        foreach ( $records as $record ) {
             
             //Loop through the fields given in the argument and set the fields with the values
             foreach ( $arrFields as $f => $v ) {
@@ -230,6 +230,7 @@ class FMDB {
             
             //Commit the setFields
             $commit = $record->commit();
+            
             if ( $this->isError( $commit ) !== 0 ) {
                 return $this->isError( $commit );
             }
@@ -240,6 +241,7 @@ class FMDB {
         
         return true;
     }
+
 
 
     /**
