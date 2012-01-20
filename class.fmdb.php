@@ -419,6 +419,18 @@ class FMDB {
     public function getLastID() {
     }
 
+    /**
+     * Get the ID of the last updated/inserted field
+     * 
+     * @author  RichardC
+     * @since   1.2
+     * 
+     * @version 1.0
+     * 
+     * @return  int
+     */
+    public function getLastID() {
+    }
 
     /**
      * Deletes a record from the table/layout with the given record ID
@@ -431,23 +443,22 @@ class FMDB {
      * @return  bool
      */
     public function deleteRecordByID( $layout, $iRecordID ) {
-        $findReq = $this->fm->getRecordById( $layout, $iRecordID );
-
-        if ( $this->isError( $findReq ) === 0 ) {
-
-            $findReq->delete();
-
-            if ( $this->isError( $commit ) === 0 ) {
-                return true;
-            } else {
-                return $this->isError( $commit );
+        
+        foreach( func_get_args() as $arg ){
+            if( empty( $arg ) || $arg == '' ){
+                return false;
             }
-        } else {
-            return $this->isError( $findReq );
+        }
+        
+        $delete = $this->fm->newDeleteCommand( $layout, $iRecordID ); 
+        $delResult = $delete->execute();
+        
+        if( $this->isError( $delResult ) ){
+            return $this->isError( $delResult );
         }
 
-        unset( $result, $commit, $record, $findReq );
-        return false;
+        unset( $delete, $delResult, $layout, $iRecordID );
+        return true;
     }
     
     
@@ -483,14 +494,20 @@ class FMDB {
         
         $i = 0;
         foreach( $search as $records ){
-            $this->deleteRecordByID( $layout, $record['rec_id'] );
+            
+            $delete = $this->deleteRecordByID( $layout, $records['rec_id'] );
+            
+            //var_dump( $delete );
+            
+            // Errors return as strings so thats why the check is to make sure its an integer
+            if( !is_int( $delete ) ){
+                return $delete; //replace $delete with 0; after testing
+            }
             $i++;
         }
         
         return $i;
-        
     }
-    
     
     /*
      * Gets the ID of the record in the last Select
