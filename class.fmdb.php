@@ -419,6 +419,7 @@ class FMDB {
     public function getLastID() {
     }
 
+
     /**
      * Deletes a record from the table/layout with the given record ID
      * 
@@ -430,10 +431,68 @@ class FMDB {
      * @return  bool
      */
     public function deleteRecordByID( $layout, $iRecordID ) {
+        $findReq = $this->fm->getRecordById( $layout, $iRecordID );
+
+        if ( $this->isError( $findReq ) === 0 ) {
+
+            $findReq->delete();
+
+            if ( $this->isError( $commit ) === 0 ) {
+                return true;
+            } else {
+                return $this->isError( $commit );
+            }
+        } else {
+            return $this->isError( $findReq );
+        }
+
+        unset( $result, $commit, $record, $findReq );
+        return false;
+    }
+    
+    
+    /**
+     * Deletes a record where the search criteria matches
+     * 
+     * @author  RichardC
+     * @since   1.4
+     * 
+     * @version 1.0
+     * 
+     * @param   string  $layout
+     * @param   array   $arrSearchCriteria
+     * 
+     * @return int      The amount of records deleted || errorCode
+     */
+    public function delete( $layout, $arrSearchCriteria ){
+        if( empty( $layout ) || empty( $arrSearchCriteria ) ){
+            return 0;
+        }
+        
+        //Performs the search
+        $search = $this->select( $layout, $arrSearchCriteria );
+        
+        if( empty( $search ) ){
+            return 0;
+        }
+        
+        //Checks for an error
+        if( array_key_exists( 'errorCode', $search ) ){
+            return $search['errorCode'];
+        }
+        
+        $i = 0;
+        foreach( $search as $records ){
+            $this->deleteRecordByID( $layout, $record['rec_id'] );
+            $i++;
+        }
+        
+        return $i;
         
     }
-
-    /**
+    
+    
+    /*
      * Gets the ID of the record in the last Select
      * 
      * @author  RichardC
