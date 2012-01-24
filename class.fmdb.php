@@ -23,7 +23,7 @@ class FMDB {
 
     /** Constructor of the class */
     public function __construct() {
-        $this->fm = new FileMaker( constant( 'FMDB_NAME' ), constant( 'FMDB_IP' ), constant( 'FMDB_USERNAME' ), constant( 'FMDB_PASSWORD' ) );
+        $this->fm = new FileMaker( FMDB_NAME, FMDB_IP, FMDB_USERNAME, FMDB_PASSWORD );
     }
 
 
@@ -33,49 +33,82 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.4
+     * @version 1.6
      * 
      * @param   obj     $request_object
      * 
      * @return  int
      */
     public static function isError( $request_object ) {
+        if( is_array( $request_object ) && array_key_exists( 'errorCode', $request_object ) ){
+            return $request_object['errorCode'];
+        }
+        
         return ( FileMaker::isError( $request_object ) ? $request_object->getCode() : 0 );
     }
 
 
     /** 
-     * Just a quick debug function that I threw together for testing 
+     * Just a quick debug function that I threw together for testing
      * 
      * @author  RichardC
      * @since   1.4
      * 
-     * @version 1.0
+     * @version 1.4
      * 
      * @param   string  $func
      * @param   array   $arrReturn
+     * @param   string  $type   'file' || 'console'
      * 
-     * @return  bool
+     * @return  mixed
      */
-    protected function debug( $func, $arrReturn ){
+    protected function debug( $func, $arrReturn, $type='file' ){
         $debugStr = '';
         
         if( $func == '' || empty( $func ) ){
             return '';
         }
         
-        foreach( $arrReturn as $k => $v ){
+        switch( $type ){
             
-            if( is_array( $v ) ){
-                foreach( $v as $n => $m ){
-                    $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] ' . $m . ' ");</script>' ." \n\r " . '<script type="text/javascript">console.log("      ");</script>';
+            case 'default':
+            case 'file':
+            
+                $fo = fopen( DEBUG_LOCATION . '/logFile.txt', 'a+'); 
+    
+                foreach( $arrReturn as $k => $v ){
+                    
+                    if( is_array( $v ) ){
+                        foreach( $v as $n => $m ){
+                            //$debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] -> ' . $m . ' ");</script>';
+                            fwrite( $fo, '[Debug ' . date( 'd-m-Y H:i:s' ) . '] ' . $func . ' - ['. $n .'] -> ' . $m . "\n\r" );
+                        }
+                    }else{
+                        //$debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
+                        fwrite( $fo,  '[Debug '. date( 'd-m-Y H:i:s' ) . '] ' . $func . ' - ['. $k .'] ' . $v . "\n\r" );
+                    }
                 }
-            }else{
-                $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
-            }
+                fclose( $fo );
+                
+                return true;
+                
+                break;
+                
+            case 'console':
+                foreach( $arrReturn as $k => $v ){
+                    if( is_array( $v ) ){
+                        foreach( $v as $n => $m ){
+                            $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] -> ' . $m . ' ");</script>';
+                        }
+                    }else{
+                        $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
+                    }
+                }
+                
+                return $debugStr;
+                
+                break;
         }
-
-        return $debugStr;
     }
 
     /**
@@ -496,8 +529,6 @@ class FMDB {
         foreach( $search as $records ){
             
             $delete = $this->deleteRecordByID( $layout, $records['rec_id'] );
-            
-            //var_dump( $delete );
             
             // Errors return as strings so thats why the check is to make sure its an integer
             if( !is_int( $delete ) ){

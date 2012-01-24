@@ -10,4 +10,6 @@ define( 'FMDB_IP', '' );
 define( 'FMDB_USER', '' );
 define( 'FMDB_PASS', '' );
 
+define( 'DEBUG_LOCATION', '' );
+
 ?>
