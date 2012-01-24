@@ -33,15 +33,16 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.6
+     * @version 1.8
      * 
      * @param   obj     $request_object
      * 
      * @return  int
      */
     public static function isError( $request_object ) {
-        if( is_array( $request_object ) && array_key_exists( 'errorCode', $request_object ) ){
-            return $request_object['errorCode'];
+        
+        if( is_array( $request_object ) && preg_grep( '/^([^*)]*)error([^*)]*)$/', array_keys( $request_object ) ) ){
+            var_dump( $request_object[0] );
         }
         
         return ( FileMaker::isError( $request_object ) ? $request_object->getCode() : 0 );
