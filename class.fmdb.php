@@ -6,7 +6,7 @@ require_once ( 'config/config.php' );
  * Interface between the FileMaker API and PHP - Written by RichardC 
  * 
  * @author  RichardC
- * @version 1.4
+ * @version 1.5
  */
 class FMDB {
     /**
@@ -41,8 +41,10 @@ class FMDB {
      */
     public static function isError( $request_object ) {
         
-        if( is_array( $request_object ) && preg_grep( '/^([^*)]*)error([^*)]*)$/', array_keys( $request_object ) ) ){
-            var_dump( $request_object[0] );
+        $preg = preg_grep( '/^([^*)]*)error([^*)]*)$/', array_keys( $request_object ) );
+        
+        if( is_array( $request_object ) && !empty( $preg ) ){
+            return $preg[0];
         }
         
         return ( FileMaker::isError( $request_object ) ? $request_object->getCode() : 0 );
