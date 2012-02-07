@@ -113,9 +113,14 @@ class FMDB {
                 break;
         }
     }
+    
 
     /**
      * Simular to select but just returns the fields which you wanted
+     * 
+     * @todo    Figure out a way to reduce the amount of loops or make the loops faster
+     * 
+     * @warning This function is discouraged for a large amount of data due to the amount of loops
      * 
      * @author  RichardC
      * @since   1.6
