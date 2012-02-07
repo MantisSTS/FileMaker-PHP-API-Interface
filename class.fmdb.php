@@ -115,6 +115,53 @@ class FMDB {
     }
 
     /**
+     * Simular to select but just returns the fields which you wanted
+     * 
+     * @author  RichardC
+     * @since   1.6
+     * 
+     * @version 1.0
+     * 
+     * @param   string  $layout
+     * @param   array   $arrSearchCriteria
+     * @param   array   $arrFields
+     * 
+     * @return array
+     */   
+    public function getFields( $layout, $arrSearchCriteria, $arrFields ){
+        $arrOut = array();
+        
+        if( !ctype_alnum( (string)$layout ) || !is_array( $arrSearchCriteria ) ){
+            return $arrOut;
+        }
+        
+        // If no fields are specified then perform a normal select 
+        if( empty( $arrFields ) || !is_array( $arrFields ) ){
+            return $this->select( $layout, $arrSearchCriteria );
+        }
+        
+        // Perform the select
+        $select = $this->select( $layout, $arrSearchCriteria );
+        
+        if( !$this->isError( $select ) ){
+            
+            // Loop through the returned fields
+            foreach( $select as $field => $contents ){
+                
+                // Loop through the desired fields
+                foreach( $arrFields as $f ){
+                    if( $field == $f ){
+                        $arrOut[$f] = $contents;
+                    }
+                }
+            }
+        } 
+        
+        return $arrOut;
+    }
+
+
+    /**
      * Selects data from a FileMaker Layout from the given criteria
      * 
      * @author  RichardC
