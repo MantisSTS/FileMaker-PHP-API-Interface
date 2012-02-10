@@ -33,7 +33,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.8
+     * @version 1.6
      * 
      * @param   obj     $request_object
      * 
@@ -41,13 +41,13 @@ class FMDB {
      */
     public static function isError( $request_object ) {
         
-        $preg = preg_grep( '/^([^*)]*)error([^*)]*)$/', array_keys( $request_object ) );
-        
-        if( is_array( $request_object ) && !empty( $preg ) ){
-            return $preg[0];
+        if( is_array( $request_object ) && preg_grep( '/^([^*)]*)error([^*)]*)$/', array_keys( $request_object ) ) ){
+            foreach( $request_object as $key => $val ){
+                return (int)$val;
+            }
         }
         
-        return ( FileMaker::isError( $request_object ) ? $request_object->getCode() : 0 );
+        return ( FileMaker::isError( $request_object ) ? (int)$request_object->getCode() : 0 );
     }
 
 
