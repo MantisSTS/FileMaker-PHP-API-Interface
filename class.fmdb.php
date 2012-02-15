@@ -18,8 +18,7 @@ class FMDB {
               $debugCheck = true,
               $fieldList = array();
     
-    public $revertedData = array(),
-           $lastObj = null;
+    public $lastObj = null;
     
     /* 
     * Filemaker LessThan/Equal to and GreaterThan/Equal to characters
