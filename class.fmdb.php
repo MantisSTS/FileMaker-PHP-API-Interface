@@ -4,12 +4,24 @@ require_once ( 'fm_api/FileMaker.php' );
 require_once ( 'config/config.php' );
 
 /**
- * Interface between the FileMaker API and PHP - Written by RichardC 
+ * Interface between the FileMaker API and PHP - Written By RichardC
  * 
  * @author  RichardC
- * @version 1.6.2
+ * @version 1.6.3
  */
 class FMDB {
+    /* 
+    * Filemaker LessThan/Equal to and GreaterThan/Equal to characters
+    * Does not work in all IDE's
+    *
+    * Update:
+    *   Reason why I have defined these as a constant is because they will 
+    *   never change. I have left them as a variable for those whom have already
+    *   started using it as a variable 
+    */
+    define( 'LTET', '≤' );
+    define( 'GTET', '≥' );
+    
     /**
      * Setting up the classwide variables 
      */
@@ -18,21 +30,16 @@ class FMDB {
               $debugCheck = true,
               $fieldList = array();
     
-    public $lastObj = null;
-    
-    /* 
-    * Filemaker LessThan/Equal to and GreaterThan/Equal to characters
-    * Does not work in all IDE's
-    */
-    public $ltet = '≤',
-           $gtet = '≥';
+    public $revertedData = array(),
+           $lastObj = null, 
+           $ltet = LTET,
+           $gtet = GTET;
 
 
     /** Constructor of the class */
     public function __construct() {
         //Performs all the relative checks that are required by the FM PHP API
         $this->doChecks(); 
-        
         $this->fm = new FileMaker( FMDB_NAME, FMDB_IP, FMDB_USERNAME, FMDB_PASSWORD );
     }
 
@@ -41,9 +48,9 @@ class FMDB {
      * Perform all checks before doing any thing
      * 
      * @author  RichardC
-     * @version 1.0.0
+     * @version 1.0
      * 
-     * @since   1.6.2
+     * @since   1.6
      * 
      * @return true
      */
@@ -63,7 +70,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.6.4
+     * @version 1.6
      * 
      * @param   obj     $request_object
      * 
@@ -85,9 +92,9 @@ class FMDB {
      * Just a quick debug function that I threw together for testing
      * 
      * @author  RichardC
-     * @since   1.4.0
+     * @since   1.4
      * 
-     * @version 1.6.0
+     * @version 1.4
      * 
      * @param   string  $func
      * @param   array   $arrReturn
@@ -99,12 +106,13 @@ class FMDB {
         $debugStr = '';
         
         if( $func == '' || empty( $func ) ){
-            return '';
+            return null;
         }
         
+        $debugStr = '';
+        
         switch( $type ){
-            
-            case 'default':
+            default:
             case 'file':
             
                 $fo = fopen('/logFile.txt', 'a+'); 
@@ -112,8 +120,6 @@ class FMDB {
                 foreach( $arrReturn as $k => $v ){
                     
                     $v = ( is_array( $v ) ? $v : array( $k => $v ) );
-                    
-                    $debugStr = '';
                     
                     foreach( $v as $n => $m ){
                         $debugStr .= sprintf(
@@ -257,7 +263,7 @@ class FMDB {
 
         if( $this->debugCheck ){
             foreach( $arrOut as $k => $v ){
-                echo $this->debug( 'SELECT', array(
+                $this->debug( 'SELECT', array(
                     $k  =>  $v 
                 ));
             }
