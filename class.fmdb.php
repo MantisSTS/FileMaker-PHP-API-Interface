@@ -8,6 +8,8 @@ require_once ( 'config/config.php' );
  * 
  * @author  RichardC
  * @version 1.6.3
+ * 
+ * @license GPLv3
  */
 class FMDB {
     /* 
@@ -115,7 +117,7 @@ class FMDB {
             default:
             case 'file':
             
-                $fo = fopen('/logFile.txt', 'a+'); 
+                $fo = fopen( DEBUG_LOCATION, 'a+' ); 
     
                 foreach( $arrReturn as $k => $v ){
                     
