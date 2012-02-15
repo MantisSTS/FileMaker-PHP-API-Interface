@@ -21,8 +21,8 @@ class FMDB {
     *   never change. I have left them as a variable for those whom have already
     *   started using it as a variable 
     */
-    define( 'LTET', '≤' );
-    define( 'GTET', '≥' );
+    const LTET = '≤';
+    const GTET = '≥';
     
     /**
      * Setting up the classwide variables 
@@ -442,8 +442,8 @@ class FMDB {
         //Perform the find
         $result = $findReq->execute();
         
-        if ( FileMaker::isError( $result ) ) {
-            return $result->getCode();    
+        if ( $this->isError( $result ) !== 0 ) {
+            return $this->isError( $result );    
         }
         
         $records = $result->getRecords();
@@ -459,8 +459,8 @@ class FMDB {
             //Commit the setFields
             $commit = $record->commit();
             
-            if ( FileMaker::isError( $commit ) ) {
-                return $commit->getCode();
+            if ( $this->isError( $commit ) !== 0 ) {
+                return $this->isError( $commit );
             }
         }
         
@@ -560,13 +560,6 @@ class FMDB {
      * @return  bool
      */
     public function deleteRecordByID( $layout, $iRecordID ) {
-        
-        foreach( func_get_args() as $arg ){
-            if( empty( $arg ) || $arg == '' ){
-                return false;
-            }
-        }
-        
         $delete = $this->fm->newDeleteCommand( $layout, $iRecordID );
         $delResult = $delete->execute();
         
@@ -605,8 +598,8 @@ class FMDB {
         }
         
         //Checks for an error
-        if( array_key_exists( 'errorCode', $search ) ){
-            return $search['errorCode'];
+        if( $this->isError( $search ) !== 0 ){
+            return $this->isError( $search );
         }
         
         $i = 0;
