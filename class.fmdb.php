@@ -2,29 +2,60 @@
 
 require_once ( 'fm_api/FileMaker.php' );
 require_once ( 'config/config.php' );
+
 /**
  * Interface between the FileMaker API and PHP - Written by RichardC 
  * 
  * @author  RichardC
- * @version 1.5
+ * @version 1.6.2
  */
 class FMDB {
     /**
-     * Setting up the classwide variables
+     * Setting up the classwide variables 
      */
-    protected $fm;
-    protected $layout = '';
-    protected $debugCheck = true;
-    public $lastObj = null;
-	
-    //Filemaker LessThan/Equal to and GreaterThan/Equal to characters - Does not work in all IDEs
-    public $ltet = '≤';
-    public $gtet = '≥';
+    protected $fm,
+              $layout = '',
+              $debugCheck = true,
+              $fieldList = array();
+    
+    public $revertedData = array(),
+           $lastObj = null;
+    
+    /* 
+    * Filemaker LessThan/Equal to and GreaterThan/Equal to characters
+    * Does not work in all IDE's
+    */
+    public $ltet = '≤',
+           $gtet = '≥';
+
 
     /** Constructor of the class */
     public function __construct() {
+        //Performs all the relative checks that are required by the FM PHP API
+        $this->doChecks(); 
+        
         $this->fm = new FileMaker( FMDB_NAME, FMDB_IP, FMDB_USERNAME, FMDB_PASSWORD );
     }
+
+
+    /**
+     * Perform all checks before doing any thing
+     * 
+     * @author  RichardC
+     * @version 1.0.0
+     * 
+     * @since   1.6.2
+     * 
+     * @return true
+     */
+    protected function doChecks(){
+        if( !function_exists( 'curl_init' ) ){
+            die( 'Please enable cURL to use the FileMaker PHP API' );
+        }
+        
+        return true;
+    }
+
 
 
     /**
@@ -33,7 +64,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.6
+     * @version 1.6.4
      * 
      * @param   obj     $request_object
      * 
@@ -55,9 +86,9 @@ class FMDB {
      * Just a quick debug function that I threw together for testing
      * 
      * @author  RichardC
-     * @since   1.4
+     * @since   1.4.0
      * 
-     * @version 1.4
+     * @version 1.6.0
      * 
      * @param   string  $func
      * @param   array   $arrReturn
@@ -77,20 +108,26 @@ class FMDB {
             case 'default':
             case 'file':
             
-                $fo = fopen( DEBUG_LOCATION . '/logFile.txt', 'a+'); 
+                $fo = fopen('/logFile.txt', 'a+'); 
     
                 foreach( $arrReturn as $k => $v ){
                     
-                    if( is_array( $v ) ){
-                        foreach( $v as $n => $m ){
-                            //$debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] -> ' . $m . ' ");</script>';
-                            fwrite( $fo, '[Debug ' . date( 'd-m-Y H:i:s' ) . '] ' . $func . ' - ['. $n .'] -> ' . $m . "\n\r" );
-                        }
-                    }else{
-                        //$debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
-                        fwrite( $fo,  '[Debug '. date( 'd-m-Y H:i:s' ) . '] ' . $func . ' - ['. $k .'] ' . $v . "\n\r" );
+                    $v = ( is_array( $v ) ? $v : array( $k => $v ) );
+                    
+                    $debugStr = '';
+                    
+                    foreach( $v as $n => $m ){
+                        $debugStr .= sprintf(
+                            '[Debug %s] %s - [ %s ] -> %s %s',
+                            date( 'd-m-Y H:i:s' ),
+                            $func,
+                            $n,
+                            $m,
+                            "\n"
+                        );
                     }
                 }
+                fwrite( $fo, $debugStr );
                 fclose( $fo );
                 
                 return true;
@@ -99,21 +136,23 @@ class FMDB {
                 
             case 'console':
                 foreach( $arrReturn as $k => $v ){
-                    if( is_array( $v ) ){
-                        foreach( $v as $n => $m ){
-                            $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $n .'] -> ' . $m . ' ");</script>';
-                        }
-                    }else{
-                        $debugStr .= '<script type="text/javascript">console.log("[Debug] ' . $func . ' - ['. $k .'] ' . $v . ' ");</script>';
+                    $v = ( is_array( $v ) ? $v : array( $k => $v ) );
+                    
+                    foreach( $v as $n => $m ){
+                        $debugStr .= sprintf(
+                            '<script type="text/javascript"
+                                console.log("[Debug] %s - %s -> %s ");
+                            </script>',
+                            $func,
+                            $n,
+                            $m
+                        );
                     }
                 }
-                
                 return $debugStr;
-                
                 break;
         }
     }
-    
 
     /**
      * Simular to select but just returns the fields which you wanted
@@ -237,7 +276,7 @@ class FMDB {
      * 
      * @param   array   $arrFields
      * 
-     * @example $objFMDB->setFields(array('fieldName' => 'ValueToUpdate'));
+     * @example $objFMDB->setFields( array( 'fieldName' => 'ValueToUpdate' ) );
      * 
      * @return  bool
      */
@@ -252,7 +291,7 @@ class FMDB {
         if ( isset( $records ) && !empty( $records ) ) {
             foreach ( $records as $record ) {
                 foreach ( $arrFields as $fieldName => $value ) {
-                    $setFields[] = $record->setField( $this->fm_escape_string( $fieldName ), $this->fm_escape_string( $value ) );
+                    $record->setField( $this->fm_escape_string( $fieldName ), $this->fm_escape_string( $value ) );
                 }
             }
             $commit = $record->commit();
@@ -268,69 +307,6 @@ class FMDB {
         
         return $blOut;
     }
-    
-    
-   /**
-     * Updates a set of fields on a layout where the clauses match
-     * 
-     * @author  RichardC
-     * @since   1.4
-     * 
-     * @version 1.0
-     * 
-     * @param   string  $layout
-     * @param   array   $arrFields
-     * @param   array   $arrSearchCriteria
-     * 
-     * @return  bool
-     */
-    public function update( $layout, $arrFields, $arrSearchCriteria ){
-        
-        //Loop through the parameters and check they are set and not empty
-        foreach( func_get_args() as $arg ){
-            if( ( $arg == '' ) || ( empty( $arg ) ) ){
-                return false;
-            }
-        }
-        
-        $findReq = $this->fm->newFindCommand( $layout );
-
-        foreach ( $arrSearchCriteria as $field => $value ) {
-            $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
-        }
-
-        //Perform the find
-        $result = $findReq->execute();
-        
-        if ( $this->isError( $result ) !== 0 ) {
-            return $this->isError( $findReq );    
-        }
-        
-        $records = $result->getRecords();
-        
-        //Loop through the found records 
-        foreach ( $records as $record ) {
-            
-            //Loop through the fields given in the argument and set the fields with the values
-            foreach ( $arrFields as $f => $v ) {
-                $record->setField( $this->fm_escape_string( $f ), $this->fm_escape_string( $v ) );
-            }
-            
-            //Commit the setFields
-            $commit = $record->commit();
-            
-            if ( $this->isError( $commit ) !== 0 ) {
-                return $this->isError( $commit );
-            }
-        }
-        
-        //Housekeeping
-        unset( $result, $commit, $record, $findReq );
-        
-        return true;
-    }
-
-
 
     /**
      * Updates a record by the given ID of the record on a specified layout
@@ -347,7 +323,6 @@ class FMDB {
      * @return  bool
      */
     public function updateRecordByID( $layout, $arrFields, $iRecordID ) {
-        $blOut = false;
         if ( ( $layout == '' ) || ( !is_array( $arrFields ) ) || ( !is_numeric( $iRecordID ) ) ) {
             return false;
         }
@@ -363,7 +338,7 @@ class FMDB {
             }
 
             if ( $this->isError( $commit ) === 0 ) {
-                $blOut = true;
+                return true;
             } else {
                 return $this->isError( $commit );
             }
@@ -372,7 +347,7 @@ class FMDB {
         }
 
         unset( $result, $commit, $record, $findReq );
-        return $blOut;
+        return false;
     }
 
     /**
@@ -426,6 +401,69 @@ class FMDB {
         return $this->fm->listLayouts();
     }
 
+
+
+    /**
+     * Updates a set of fields on a layout where the clauses match
+     * 
+     * @author  RichardC
+     * @since   1.4
+     * 
+     * @version 1.0
+     * 
+     * @param   string  $layout
+     * @param   array   $arrFields
+     * @param   array   $arrSearchCriteria
+     * 
+     * @return  bool
+     */
+    public function update( $layout, $arrFields, $arrSearchCriteria ){
+        
+        //Loop through the parameters and check they are set and not empty
+        foreach( func_get_args() as $arg ){
+            if( ( $arg == '' ) || ( empty( $arg ) ) ){
+                return false;
+            }
+        }
+        
+        $findReq = $this->fm->newFindCommand( $layout );
+
+        foreach ( $arrSearchCriteria as $field => $value ) {
+            $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
+        }
+
+        //Perform the find
+        $result = $findReq->execute();
+        
+        if ( FileMaker::isError( $result ) ) {
+            return $result->getCode();    
+        }
+        
+        $records = $result->getRecords();
+        
+        //Loop through the found records 
+        foreach ( $records as $record ) {
+            
+            //Loop through the fields given in the argument and set the fields with the values
+            foreach ( $arrFields as $f => $v ) {
+                $record->setField( $this->fm_escape_string( $f ), $this->fm_escape_string( $v ) );
+            }
+            
+            //Commit the setFields
+            $commit = $record->commit();
+            
+            if ( FileMaker::isError( $commit ) ) {
+                return $commit->getCode();
+            }
+        }
+        
+        //Housekeeping
+        unset( $result, $commit, $record, $findReq );
+        
+        return true;
+    }
+
+
     /**
      * Alias of 'select' 
      * 
@@ -475,7 +513,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.0
+     * @version 1.0.2
      * 
      * @param   string  $layout
      * @param   string  $scriptName
@@ -488,23 +526,7 @@ class FMDB {
             return false;
         }
         
-        if ( $this->fm->newPerformScriptCommand( $layout, $scriptName, $params ) ) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Get the ID of the last updated/inserted field
-     * 
-     * @author  RichardC
-     * @since   1.2
-     * 
-     * @version 1.0
-     * 
-     * @return  int
-     */
-    public function getLastID() {
+        return ( $this->fm->newPerformScriptCommand( $layout, $scriptName, $params ) ? true : false );
     }
 
     /**
@@ -524,9 +546,9 @@ class FMDB {
      * Deletes a record from the table/layout with the given record ID
      * 
      * @author  RichardC
-     * @since   1.2
+     * @since   1.2.0
      * 
-     * @version 1.0
+     * @version 1.0.2
      * 
      * @return  bool
      */
@@ -538,7 +560,7 @@ class FMDB {
             }
         }
         
-        $delete = $this->fm->newDeleteCommand( $layout, $iRecordID ); 
+        $delete = $this->fm->newDeleteCommand( $layout, $iRecordID );
         $delResult = $delete->execute();
         
         if( $this->isError( $delResult ) ){
@@ -554,9 +576,9 @@ class FMDB {
      * Deletes a record where the search criteria matches
      * 
      * @author  RichardC
-     * @since   1.4
+     * @since   1.4.0
      * 
-     * @version 1.0
+     * @version 1.0.0
      * 
      * @param   string  $layout
      * @param   array   $arrSearchCriteria
@@ -594,8 +616,8 @@ class FMDB {
         
         return $i;
     }
-    
-    /*
+
+    /**
      * Gets the ID of the record in the last Select
      * 
      * @author  RichardC
@@ -627,9 +649,32 @@ class FMDB {
         }
 
         if ( !empty( $input ) && is_string( $input ) ) {
-            return str_replace( array( '\\', '/', "\0", "\n", "\r", "'", '"', "\x1a", '<', '>' ), array( '\\\\', '\/', '\\0', '\\n', '\\r', "\\'", '\\"', '\\Z', '\<\\/', '\\/>' ), $input );
+            return str_replace( 
+                array( '\\', 
+                        '/', 
+                        "\0", 
+                        "\n", 
+                        "\r", 
+                        "'", 
+                        '"', 
+                        "\x1a", 
+                        '<', 
+                        '>', 
+                        '%00'
+                ), array( 
+                        '\\\\',
+                        '\/', 
+                        '\\0', 
+                        '\\n', 
+                        '\\r', 
+                        "\\'", 
+                        '\\"', 
+                        '\\Z', 
+                        '\<\\/', 
+                        '\\/>', 
+                        '' 
+                ), $input );
         }
-        return $input;
     }
 }
 
