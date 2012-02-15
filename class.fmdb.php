@@ -34,8 +34,8 @@ class FMDB {
     
     public $revertedData = array(),
            $lastObj = null, 
-           $ltet = LTET,
-           $gtet = GTET;
+           $ltet = self::LTET,
+           $gtet = self::GTET;
 
 
     /** Constructor of the class */
