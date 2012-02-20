@@ -49,6 +49,8 @@ class FMDB {
     /**
      * Perform all checks before doing any thing
      * 
+     * @todo    Will extend this function to perfrom more extensive tests
+     * 
      * @author  RichardC
      * @version 1.0
      * 
