@@ -489,31 +489,6 @@ class FMDB {
         return $this->select( $layout, $arrSearchCriteria );
     }
 
-    /**
-     * Counts the number of items in the given array
-     * 
-     * @author  RichardC
-     * @since   1.0
-     * 
-     * @version 1.0
-     * 
-     * @param   array   $arrResult
-     * 
-     * @return  int
-     */
-    public function fm_num_rows( $arrResult ) {
-        $intOut = 0;
-        if ( is_array( $arrResult ) ) {
-            foreach ( $arrResult as $result ) {
-                $intOut = count( $result );
-            }
-        } else {
-            $intOut = count( $arrResult );
-        }
-
-        return $intOut;
-    }
-
 
     /**
      * Runs a script on the layout
