@@ -224,8 +224,7 @@ class FMDB {
      * 
      * @param   string  $layout
      * @param   array   $arrSearchCriteria
-     * @param   bool    $xml
-     * 
+     *
      * @return  array
      */
     public function select( $layout, $arrSearchCriteria ) {
