@@ -1,4 +1,6 @@
-# [FileMaker PHP API (FileMaker API for PHP) Interface by RichardC]
+# [FileMaker PHP API (FileMaker API for PHP) Interface]
+
+###### Written by RichardC
 
 The FileMaker API for PHP Interface written by RichardC is an easier way for you to write applications from the PHP API from FileMaker.
 All you will have to do is download the files, configure the config file and require the class in where ever you want to query the FileMaker Database.
