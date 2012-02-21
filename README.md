@@ -27,15 +27,15 @@ Documentation is currently being worked on and will be released by April 14th 20
 ###[Functions]
 Please note that all functions get automatically sanitized using my fm_escape_string() function.
 
-1. **[Public Static] isError( $request_object )** - Checks whether a given object returns an error, if it does it will tell you which error otherwise it will return 0
-    Example: 
+1. **[Public Static] isError( $request_object )** - Checks whether a given object returns an error, if it does it will tell you which error otherwise it will return 0  
+    Example:   
     
         if( FMDB::isError( $request_object ) != 401 ){
             echo 'Records were found!';
         }
         
-2. **[Public] select( $layout, $arrFields )** - Gets a list of fields and values from a given layout. It will return an array.
-    Example:
+2. **[Public] select( $layout, $arrFields )** - Gets a list of fields and values from a given layout. It will return an array.  
+    Example:  
     
         $select = $fmdb->select( 'Layout', array(
             'fieldName'     =>  'valueToSearch',
@@ -48,7 +48,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             }
         }
         
-3. **[Public] setFields( $arrFields )** - This function will set fields from the previously used object (normally from the last $fmdb->select() function). Returns boolean
+3. **[Public] setFields( $arrFields )** - This function will set fields from the previously used object (normally from the last $fmdb->select() function). Returns boolean  
     Example:
     
         $select = $fmdb->select( 'Layout', array(
@@ -66,14 +66,14 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             }
         }
     
-4. **[Public] updateRecordByID( $layout, $arrFields, $iRecordID )** - Updates a record by using it's ID which you can get by using the select function and then using the 'rec_id' field. Returns Boolean
+4. **[Public] updateRecordByID( $layout, $arrFields, $iRecordID )** - Updates a record by using it's ID which you can get by using the select function and then using the 'rec_id' field. Returns Boolean  
     Example:
     
         $updateRec = $fmdb->updateRecordByID( 'Layout', array(
             'Field' =>  'Value'
         ), 123);
         
-5. **[Public] insert( $layout, $arrFields )** - Inserts a new record into the table (layout)
+5. **[Public] insert( $layout, $arrFields )** - Inserts a new record into the table (layout)  
     Example:
     
         $insert = $fmdb->insert( 'Layout', array(
@@ -84,7 +84,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             return true;
         }
 
-6. **[Public] get_layout_names()** - Returns all the layout names into an array
+6. **[Public] get_layout_names()** - Returns all the layout names into an array  
     Example:
     
         $layouts = $fmdb->get_layout_names();
@@ -92,7 +92,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             echo $layout;
         }
 
-7. **[Public] find( $layout, $arrSearchCriteria )** - Alias of Select
+7. **[Public] find( $layout, $arrSearchCriteria )** - Alias of Select  
     Example:
     
         $find = $fmdb->find( 'Layout', array(
@@ -106,7 +106,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             }
         }
 
-8. **[Public] runScript( $layout, $scriptName, $params = array() )** - Runs a script on the FileMaker server and returns true/false
+8. **[Public] runScript( $layout, $scriptName, $params = array() )** - Runs a script on the FileMaker server and returns true/false  
     Example:
     
         $runScript = $fmdb->runScript( 'Layout', 'myScript', array( 'param1', 'param2' ) );
@@ -116,7 +116,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
         }
         
 
-9. **[Public] getRecordId()** - Returns the record ID of the last object (this may be made redundant in the future)
+9. **[Public] getRecordId()** - Returns the record ID of the last object (this may be made redundant in the future)  
     Example:
         
         $select = $fmdb->select( 'MyLayout', array(
@@ -127,7 +127,7 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             return $fmdb->getRecordId();
         }
 
-10. **[Public] fm_escape_string( $input )** - Escapes any unwanted characters in an input string
+10. **[Public] fm_escape_string( $input )** - Escapes any unwanted characters in an input string  
     Example:
     
         $myInputString = $fmdb->fm_escape_string( 'MyValueToInsert' );
