@@ -70,19 +70,64 @@ Please note that all functions get automatically sanitized using my fm_escape_st
             'Field' =>  'Value'
         ), 123);
         
-5. **[Public] insert( $layout, $arrFields )**
+5. **[Public] insert( $layout, $arrFields )** - Inserts a new record into the table (layout)
+    Example:
+    
+        `$insert = $fmdb->insert( 'Layout', array(
+            'MyField' => 'MyValue'
+        ));
+        
+        if( FMDB::isError( $insert ) === 0 ){
+            return true;
+        }`
 
-6. **[Public] get_layout_names()**
+6. **[Public] get_layout_names()** - Returns all the layout names into an array
+    Example:
+    
+        `$layouts = $fmdb->get_layout_names();
+        foreach( $layouts as $layout ){
+            echo $layout;
+        }`
 
 7. **[Public] find( $layout, $arrSearchCriteria )** - Alias of Select
+    Example:
+    
+        `$find = $fmdb->find( 'Layout', array(
+            'fieldName'     =>  'valueToSearch',
+            'fieldName2'    =>  'valueToSearch'
+        )); 
+        
+        if( is_array( $find ) ){
+            foreach( $find as $result ){
+                echo $result['fieldName'];
+            }
+        }`
 
-8. **[Public] fm_num_rows( $arrResult )** - Returns the number of rows in a result array.
+8. **[Public] runScript( $layout, $scriptName, $params = array() )** - Runs a script on the FileMaker server and returns true/false
+    Example:
+    
+        `$runScript = $fmdb->runScript( 'Layout', 'myScript', array( 'param1', 'param2' ) );
+        
+        if( $runScript == true ){
+            return true;
+        }`
+        
 
-9. **[Public] runScript( $layout, $scriptName, $params = array() )** - Runs a script on the FileMaker server
+9. **[Public] getRecordId()** - Returns the record ID of the last object (this may be made redundant in the future)
+    Example:
+        
+        `$select = $fmdb->select( 'MyLayout', array(
+            'Field' =>  'value'
+        ));
+        
+        if( FMDB::isError( $select ) === 0 ){
+            return $fmdb->getRecordId();
+        }`
 
-10. **[Public] getRecordId()** - Returns the record ID of the last object
-
-11. **[Public] fm_escape_string( $input )** - Escapes any unwanted characters in an input string
+10. **[Public] fm_escape_string( $input )** - Escapes any unwanted characters in an input string
+    Example:
+    
+        `$myInputString = $fmdb->fm_escape_string( 'MyValueToInsert' );`
 
 
 
