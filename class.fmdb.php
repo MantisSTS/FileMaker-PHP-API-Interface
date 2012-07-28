@@ -7,7 +7,7 @@ require_once ( 'config/config.php' );
  * Interface between the FileMaker API and PHP - Written By RichardC
  * 
  * @author  RichardC
- * @version 1.6.3
+ * @version 1.7
  * 
  * @license GPLv3
  */
@@ -613,7 +613,7 @@ class FMDB {
      * @author  RichardC
      * @since   1.0
      * 
-     * @version 1.0
+     * @version 1.1
      * 
      * @param   string  $input
      * 
@@ -665,7 +665,7 @@ class FMDB {
             }
 
             $input = str_replace( $searchCriteria, $replacements, $input );
-            
+
             return $input;
         }
     }
