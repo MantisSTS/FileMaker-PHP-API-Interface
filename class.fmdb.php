@@ -619,37 +619,54 @@ class FMDB {
      * 
      * @return  string
      */
-    public function fm_escape_string( $input ) {
+    public function fm_escape_string( $input, $editCmd = false ) {
         if ( is_array( $input ) ) {
             return array_map( __method__, $input );
         }
 
         if ( !empty( $input ) && is_string( $input ) ) {
-            return str_replace( 
-                array( '\\', 
-                        '/', 
-                        "\0", 
-                        "\n", 
-                        "\r", 
-                        "'", 
-                        '"', 
-                        "\x1a", 
-                        '<', 
-                        '>', 
-                        '%00'
-                ), array( 
-                        '\\\\',
-                        '\/', 
-                        '\\0', 
-                        '\\n', 
-                        '\\r', 
-                        "\\'", 
-                        '\\"', 
-                        '\\Z', 
-                        '\<\\/', 
-                        '\\/>', 
-                        '' 
-                ), $input );
+
+            $searchCriteria = array(
+                '\\', 
+                '/', 
+                "\0", 
+                "\n", 
+                "\r", 
+                "'", 
+                '"', 
+                "\x1a", 
+                '<', 
+                '>', 
+                '%00'
+            );
+
+            $replacements = array(
+                '\\\\',
+                '\/', 
+                '\\0', 
+                '\\n', 
+                '\\r', 
+                "\\'", 
+                '\\"', 
+                '\\Z', 
+                '\<\\/', 
+                '\\/>', 
+                '' 
+            );
+
+            // Really not the most elegant solution but it _should_ work
+            // Fixes bug #1 - Thanks to interpreet99 on GitHub
+            if( $editCmd === true ){
+                $searchCriteria[] = '*';
+                $searchCriteria[] = '@';
+
+                $replacements[] = '\*';
+                $replacements[] = '\@';
+            }
+
+            $input = str_replace( $searchCriteria, $replacements, $input );
+            
+            return $input;
         }
     }
 }
