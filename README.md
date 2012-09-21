@@ -5,6 +5,8 @@
 The FileMaker API for PHP Interface written by RichardC is an easier way for you to write applications from the FileMaker API for PHP.
 All you will have to do is download the files, configure the config file and require the class in where ever you want to query the FileMaker Database.
 
+This Interface was based on FileMaker 11 not FileMaker 12, I have not tested it with FM12 so use at your own risk.
+
 ## Dependencies
 - FileMaker API for PHP (Included in this project)  
     _Can also be downloaded here: http://fmdl.filemaker.com/MISC/PHPAPI/win/FM_API_for_PHP_Standalone.zip)_
@@ -17,10 +19,6 @@ All you will have to do is download the files, configure the config file and req
 Releases will be numbered with the following format:
 `<major>.<minor>.<patch>` 
 For example: `1.4.6`
-
-
-## Documentation
-Documentation is currently being worked on and will be released by April 14th 2012.
 
 ##[Class] FMDB
 
