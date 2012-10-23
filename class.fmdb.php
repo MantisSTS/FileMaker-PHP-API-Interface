@@ -429,6 +429,22 @@ class FMDB {
     }
 
 
+    /**
+     * Gets the layout names within a Database
+     *
+     * Alias of get_layout_names()
+     *
+     * @author  RichardC
+     * @since   1.0
+     *
+     * @version 1.0
+     *
+     * @return  array
+     */
+    public function getLayouts(){
+        return $this->get_layout_names();
+    }
+
 
     /**
      * Updates a set of fields on a layout where the clauses match
