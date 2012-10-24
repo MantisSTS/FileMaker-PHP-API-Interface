@@ -238,12 +238,11 @@ class FMDB {
         $findReq = $this->fm->newFindCommand( $layout );
 
         foreach ( $arrSearchCriteria as $field => $value ) {
-            if( $sanitize ){
-                $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
-            } else {
-                $findReq->addFindCriterion( $field, $value );
-            }
 
+            $field = ( $sanitize ? $this->fm_escape_string( $field ) : $field );
+            $value = ( $sanitize ? $this->fm_escape_string( $value ) : $value );
+
+            $findReq->addFindCriterion( $field, $value );
         }
 
         $results = $findReq->execute();
@@ -307,12 +306,11 @@ class FMDB {
             foreach ( $records as $record ) {
                 foreach ( $arrFields as $fieldName => $value ) {
 
-                    // For those whom don't need to sanitize the input data
-                    if( $sanitize ){
-                        $record->setField( $this->fm_escape_string( $fieldName ), $this->fm_escape_string( $value ) );
-                    } else {
-                        $record->setField( $fieldName, $value );
-                    }
+                    $fieldName = ( $sanitize ? $this->fm_escape_string( $fieldName ) : $fieldName );
+                    $value = ( $sanitize ? $this->fm_escape_string( $value ) : $value );
+
+                    $recrd->setField( $fieldName, $value );
+
                 }
             }
             $commit = $record->commit();
@@ -354,11 +352,12 @@ class FMDB {
 
             foreach ( $findReq as $record ) {
                 foreach ( $arrFields as $f => $v ) {
-                    if( $sanitize ){
-                        $record->setField( $this->fm_escape_string( $f ), $this->fm_escape_string( $v ) );
-                    } else {
-                        $record->setField( $f, $v );
-                    }
+
+                    $f = ( $sanitize ? $this->fm_escape_string( $f ) : $f );
+                    $v = ( $sanitize ? $this->fm_escape_string( $v ) : $v );
+
+                    $record->setField( $f, $v );
+
 
                 }
                 $commit = $record->commit();
@@ -387,10 +386,11 @@ class FMDB {
      *
      * @param   string  $layout
      * @param   array   $arrFields
+     * @param   bool    $sanitize
      *
      * @return  bool
      */
-    public function insert( $layout, $arrFields ) {
+    public function insert( $layout, $arrFields, $sanitize = true ) {
         $blOut = false;
         if ( ( $layout == '' ) || ( !is_array( $arrFields ) ) ) {
             return false;
@@ -398,7 +398,11 @@ class FMDB {
 
         // Auto-Sanitize the input data
         foreach ( $arrFields as $field => $value ) {
-            $fields[$this->fm_escape_string( $field )] = $this->fm_escape_string( $value );
+
+            $field = ( $sanitize ? $this->fm_escape_string( $field ) : $field );
+            $value = ( $sanitize ? $this->fm_escape_string( $value ) : $value );
+
+            $fields[$field] = $value;
         }
 
         $addCmd = $this->fm->newAddCommand( $this->fm_escape_string( $layout ), $fields );
@@ -473,11 +477,11 @@ class FMDB {
         $findReq = $this->fm->newFindCommand( $layout );
 
         foreach ( $arrSearchCriteria as $field => $value ) {
-            if( $sanitize ){
-                $findReq->addFindCriterion( $this->fm_escape_string( $field ), $this->fm_escape_string( $value ) );
-            } else {
-                $findReq->addFindCriterion( $field, $value );
-            }
+            $field = ( $sanitize ? $this->fm_escape_string( $field ) : $field );
+            $value = ( $sanitize ? $this->fm_escape_string( $value ) : $value );
+
+            $findReq->addFindCriterion( $field, $value );
+
         }
 
         //Perform the find
@@ -494,11 +498,12 @@ class FMDB {
 
             //Loop through the fields given in the argument and set the fields with the values
             foreach ( $arrFields as $f => $v ) {
-                if( $sanitize ){
-                    $record->setField( $this->fm_escape_string( $f ), $this->fm_escape_string( $v ) );
-                } else {
-                    $record->setField( $f, $v );
-                }
+
+                $f = ( $sanitize ? $this->fm_escape_string( $f ) : $f );
+                $v = ( $sanitize ? $this->fm_escape_string( $v ) : $v );
+
+                $record->setField( $f, $v );
+
             }
 
             //Commit the setFields
