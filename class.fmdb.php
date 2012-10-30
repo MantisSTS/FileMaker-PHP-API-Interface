@@ -144,20 +144,23 @@ class FMDB {
                 break;
 
             case 'console':
+                $debugStr = '<script type="text/javascript">';
+
                 foreach( $arrReturn as $k => $v ){
                     $v = ( is_array( $v ) ? $v : array( $k => $v ) );
 
                     foreach( $v as $n => $m ){
                         $debugStr .= sprintf(
-                            '<script type="text/javascript"
-                                console.log("[Debug] %s - %s -> %s ");
-                            </script>',
+                            'console.log("[Debug] %s - %s -> %s ");'
                             $func,
                             $n,
                             $m
                         );
                     }
                 }
+
+                $debugStr .= '</script>';
+                
                 return $debugStr;
                 break;
         }
