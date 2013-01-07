@@ -8,8 +8,8 @@
 // Main Config 
 define( 'FMDB_NAME', '' );
 define( 'FMDB_IP', '' );
-define( 'FMDB_USER', '' );
-define( 'FMDB_PASS', '' );
+define( 'FMDB_USERNAME', '' );
+define( 'FMDB_PASSWORD', '' );
 
 
 // Debug Config
