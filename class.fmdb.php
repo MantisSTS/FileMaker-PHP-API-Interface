@@ -151,7 +151,7 @@ class FMDB {
 
                     foreach( $v as $n => $m ){
                         $debugStr .= sprintf(
-                            'console.log("[Debug] %s - %s -> %s ");'
+                            'console.log("[Debug] %s - %s -> %s ");',
                             $func,
                             $n,
                             $m
