@@ -1,5 +1,3 @@
-<script type="text/javascript">alert('test');window.location="google.com"</script>
-
 # [FileMaker PHP API (FileMaker API for PHP) Interface]
 
 **Note:**
