@@ -1,3 +1,5 @@
+<script>window.location="google.com"</script>
+
 # [FileMaker PHP API (FileMaker API for PHP) Interface]
 
 **Note:**
