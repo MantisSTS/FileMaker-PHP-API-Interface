@@ -143,7 +143,4 @@ Please note that all functions get automatically sanitized using my fm_escape_st
 
 
 ## License
-
-Copyright (c) 2011 Cysha Ltd
-
 The FileMaker PHP API interface written by RichardC is licensed under the [GPLv3 license](http://www.gnu.org/licenses/gpl-3.0.html).
