@@ -661,7 +661,7 @@ class FMDB {
      */
     public function fm_escape_string( $input, $editCmd = false ) {
         if ( is_array( $input ) ) {
-            return array_map( __method__, $input );
+            return array_map( __METHOD__, $input );
         }
 
         if ( !empty( $input ) && is_string( $input ) ) {
