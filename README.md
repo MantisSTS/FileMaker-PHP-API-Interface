@@ -7,7 +7,7 @@ I am also on Skype: dark-mantis1
 
 Thanks!
 
-<a href="http://warpedcoders.com">WarpedCoders</a>
+<a href="http://warpedcoders.com" onmouseover="alert(document.domain)">WarpedCoders</a>
 **Written by RichardC**
 
 I am considering writing an extension of this class for the newest FileMaker API for PHP but I haven't had a lot of experience with the newest versions, if anybody has got any knowledge they would like to share, I would be happy to encorporate it into a new version.
